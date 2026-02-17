@@ -11,7 +11,7 @@ def parse_args():
     )
     parser.add_argument(
         "--input-json",
-        default="detections.json",
+        default="detections_manhole_video_manhole_video_20260217_163033.json",
         help="Path to raw detections JSON from video_processor.py",
     )
     parser.add_argument(

@@ -13,10 +13,10 @@ def parse_args():
         description="Sample video frames, run YOLO segmentation, and export detections to JSON."
     )
     parser.add_argument("--model", default="best.pt", help="Path to YOLO model (.pt)")
-    parser.add_argument("--video", default="road_video.mp4", help="Input video path")
+    parser.add_argument("--video", default="manhole_video.webm", help="Input video path")
     parser.add_argument(
         "--output-json",
-        default="detections.json",
+        default="detections_manhole_video.json",
         help="Base output JSON file name/path",
     )
     parser.add_argument(
