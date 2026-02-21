@@ -1,0 +1,130 @@
+{
+  "source_file": "detections_road_video_road_video_20260220_212049.json",
+  "video": "road_video.mp4",
+  "model": "best.pt",
+  "iou_threshold": 0.5,
+  "total_raw_detections": 10,
+  "total_issues": 10,
+  "issues": [
+    {
+      "issue_id": "POT_001",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 1.0,
+      "last_seen": 1.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 3550.0,
+      "max_area_pixels": 3550,
+      "avg_confidence": 0.8008,
+      "max_confidence": 0.8008
+    },
+    {
+      "issue_id": "POT_002",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 1.0,
+      "last_seen": 1.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 916.0,
+      "max_area_pixels": 916,
+      "avg_confidence": 0.7793,
+      "max_confidence": 0.7793
+    },
+    {
+      "issue_id": "POT_003",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 1.0,
+      "last_seen": 1.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 2410.0,
+      "max_area_pixels": 2410,
+      "avg_confidence": 0.7001,
+      "max_confidence": 0.7001
+    },
+    {
+      "issue_id": "POT_004",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 1.0,
+      "last_seen": 1.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 6923.0,
+      "max_area_pixels": 6923,
+      "avg_confidence": 0.5416,
+      "max_confidence": 0.5416
+    },
+    {
+      "issue_id": "ROA_005",
+      "type": "road_crack",
+      "class_id": 1,
+      "first_seen": 8.0,
+      "last_seen": 8.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 3921.0,
+      "max_area_pixels": 3921,
+      "avg_confidence": 0.5263,
+      "max_confidence": 0.5263
+    },
+    {
+      "issue_id": "POT_006",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 12.0,
+      "last_seen": 12.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 57795.0,
+      "max_area_pixels": 57795,
+      "avg_confidence": 0.6012,
+      "max_confidence": 0.6012
+    },
+    {
+      "issue_id": "POT_007",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 17.0,
+      "last_seen": 17.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 1270.0,
+      "max_area_pixels": 1270,
+      "avg_confidence": 0.6041,
+      "max_confidence": 0.6041
+    },
+    {
+      "issue_id": "POT_008",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 19.0,
+      "last_seen": 19.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 644.0,
+      "max_area_pixels": 644,
+      "avg_confidence": 0.7283,
+      "max_confidence": 0.7283
+    },
+    {
+      "issue_id": "POT_009",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 20.0,
+      "last_seen": 20.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 1131.0,
+      "max_area_pixels": 1131,
+      "avg_confidence": 0.7341,
+      "max_confidence": 0.7341
+    },
+    {
+      "issue_id": "POT_010",
+      "type": "pothole",
+      "class_id": 0,
+      "first_seen": 21.0,
+      "last_seen": 21.0,
+      "frames_detected": 1,
+      "avg_area_pixels": 36713.0,
+      "max_area_pixels": 36713,
+      "avg_confidence": 0.9038,
+      "max_confidence": 0.9038
+    }
+  ]
+}
