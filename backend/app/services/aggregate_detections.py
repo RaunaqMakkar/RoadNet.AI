@@ -105,6 +105,8 @@ def finalize_issues(issues):
                 "class_id": issue["class_id"],
                 "first_seen": round(issue["first_seen"], 3),
                 "last_seen": round(issue["last_seen"], 3),
+                "video_timestamp": round(issue["first_seen"], 3),
+                "frame_number": min(issue["frame_numbers"]) if issue["frame_numbers"] else 0,
                 "frames_detected": issue["frames_detected"],
                 "avg_area_pixels": round(issue["avg_area_pixels"], 2),
                 "max_area_pixels": int(round(issue["max_area_pixels"])),
