@@ -7,7 +7,7 @@ import MapFilters from "../components/MapFilters";
 import "../styles/MapView.css";
 
 const DEFAULT_FILTERS = {
-    priorities: new Set(["Critical", "High"]),
+    priorities: new Set(["Critical", "High", "Moderate", "Low"]),
     issueType: "",
     zone: "",
     department: "",
@@ -55,29 +55,41 @@ function MapView() {
     const [filteredFeatures, setFilteredFeatures] = useState([]);
     const [loading, setLoading] = useState(true);
     const [mapMode, setMapMode] = useState("Standard");
-    const [filters, setFilters] = useState(DEFAULT_FILTERS);
+
+    // pendingFilters = what the user sees in the filter panel (not yet applied)
+    // appliedFilters = what is actually applied to the map
+    const [pendingFilters, setPendingFilters] = useState(DEFAULT_FILTERS);
+    const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
 
     useEffect(() => {
         API.get("/map/geojson")
             .then((res) => {
                 const feats = res.data.features || [];
                 setAllFeatures(feats);
+                // Apply the default filters on initial load
+                const result = feats.filter((f) => matchesFilter(f, DEFAULT_FILTERS));
+                setFilteredFeatures(result);
             })
             .catch(() => setAllFeatures([]))
             .finally(() => setLoading(false));
     }, []);
 
-    const applyFilters = useCallback(() => {
-        const result = allFeatures.filter((f) => matchesFilter(f, filters));
-        setFilteredFeatures(result);
-    }, [allFeatures, filters]);
-
+    // Only re-filter when appliedFilters change (i.e., user clicked Apply)
     useEffect(() => {
-        applyFilters();
-    }, [applyFilters]);
+        const result = allFeatures.filter((f) => matchesFilter(f, appliedFilters));
+        setFilteredFeatures(result);
+    }, [allFeatures, appliedFilters]);
+
+    const handleApply = () => {
+        // Copy pendingFilters → appliedFilters
+        setAppliedFilters({
+            ...pendingFilters,
+            priorities: new Set(pendingFilters.priorities),
+        });
+    };
 
     const handleClear = () => {
-        setFilters({
+        const cleared = {
             priorities: new Set(),
             issueType: "",
             zone: "",
@@ -85,7 +97,9 @@ function MapView() {
             verifiedOnly: false,
             dateFrom: "",
             dateTo: "",
-        });
+        };
+        setPendingFilters(cleared);
+        setAppliedFilters(cleared);
     };
 
     return (
@@ -97,16 +111,16 @@ function MapView() {
                         <div className="spinner" />
                     </div>
                 )}
-                <MapContainerView features={filteredFeatures} />
+                <MapContainerView features={filteredFeatures} mode={mapMode} />
                 <MapModeToggle mode={mapMode} onChange={setMapMode} />
                 <MapLegend />
             </div>
 
             {/* Filter Panel */}
             <MapFilters
-                filters={filters}
-                onChange={setFilters}
-                onApply={applyFilters}
+                filters={pendingFilters}
+                onChange={setPendingFilters}
+                onApply={handleApply}
                 onClear={handleClear}
                 markerCount={filteredFeatures.length}
             />

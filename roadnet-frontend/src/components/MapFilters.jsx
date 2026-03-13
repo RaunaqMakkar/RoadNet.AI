@@ -24,7 +24,7 @@ function MapFilters({ filters, onChange, onApply, onClear, markerCount }) {
                         Priority
                     </div>
                     <div className="filter-checkbox-grid">
-                        {["Critical", "High", "Medium", "Low"].map((p) => {
+                        {["Critical", "High", "Moderate", "Low"].map((p) => {
                             const checked = filters.priorities.has(p);
                             return (
                                 <label key={p} className={`filter-checkbox${checked ? " checked" : ""}`}>
