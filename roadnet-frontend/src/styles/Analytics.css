@@ -520,8 +520,8 @@
     color: var(--text-muted, #94a3b8);
 }
 
-/* Responsive */
-@media (max-width: 1100px) {
+/* ===== Responsive: Tablet ===== */
+@media (max-width: 1024px) {
     .analytics-charts-row {
         grid-template-columns: 1fr;
     }
@@ -536,5 +536,82 @@
 
     .predictive-cards {
         grid-template-columns: 1fr;
+    }
+
+    .analytics-page {
+        padding: 24px 20px;
+    }
+
+    .analytics-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* ===== Responsive: Mobile ===== */
+@media (max-width: 768px) {
+    .analytics-page {
+        padding: 16px 12px;
+    }
+
+    .analytics-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .analytics-header-text h1 {
+        font-size: 22px;
+    }
+
+    .analytics-header-actions {
+        flex-wrap: wrap;
+    }
+
+    .analytics-kpis {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .analytics-kpi {
+        padding: 14px 16px;
+    }
+
+    .analytics-kpi-value {
+        font-size: 24px;
+    }
+
+    .analytics-charts-row,
+    .analytics-bottom-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .predictive-section {
+        padding: 18px;
+    }
+
+    .predictive-cards {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .dept-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .a-panel {
+        padding: 16px;
+    }
+}
+
+/* ===== Responsive: Small Mobile ===== */
+@media (max-width: 480px) {
+    .analytics-header-text h1 {
+        font-size: 20px;
+    }
+
+    .analytics-kpi-value {
+        font-size: 22px;
     }
 }

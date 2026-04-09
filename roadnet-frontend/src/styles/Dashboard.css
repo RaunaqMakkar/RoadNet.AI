@@ -37,6 +37,7 @@ body {
   background: var(--bg-gray);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* ===== Navbar ===== */
@@ -50,7 +51,19 @@ body {
   box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 1100;
+}
+
+/* ===== Global Table Scroll Container ===== */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== Leaflet z-index override ===== */
+.leaflet-container {
+  z-index: 0 !important;
 }
 
 .navbar-brand {
@@ -1151,8 +1164,47 @@ body {
   }
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 1200px) {
+/* ===== Hamburger Button (hidden on desktop) ===== */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: auto;
+  z-index: 1001;
+}
+
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 22px;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger-icon.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ===== Responsive: Tablet (max-width: 1024px) ===== */
+@media (max-width: 1024px) {
   .kpi-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1161,22 +1213,184 @@ body {
   .bottom-row {
     grid-template-columns: 1fr;
   }
-}
-
-@media (max-width: 768px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 
   .navbar {
+    padding: 0 20px;
+  }
+
+  .navbar-brand {
+    margin-right: 24px;
+  }
+
+  .navbar-links a {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .dashboard {
+    padding: 24px 20px;
+  }
+
+  .ai-overview-content {
+    padding: 20px 24px;
+  }
+
+  .notif-dropdown {
+    width: 340px;
+  }
+
+  .profile-dropdown {
+    width: 300px;
+  }
+}
+
+/* ===== Responsive: Mobile (max-width: 768px) ===== */
+@media (max-width: 768px) {
+
+  /* --- Navbar --- */
+  .navbar {
     padding: 0 16px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    order: 3;
+  }
+
+  .navbar-brand {
+    margin-right: auto;
   }
 
   .navbar-links {
     display: none;
+    flex-direction: column;
+    width: 100%;
+    order: 10;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    padding: 8px 0;
+    gap: 0;
   }
 
+  .navbar-links.mobile-open {
+    display: flex;
+  }
+
+  .navbar-links li {
+    width: 100%;
+  }
+
+  .navbar-links a {
+    display: block;
+    padding: 14px 20px;
+    font-size: 15px;
+    border-radius: 0;
+    border-bottom: none;
+  }
+
+  .navbar-links a.active {
+    background: #eff6ff;
+    border-bottom: none;
+    border-left: 3px solid var(--primary-blue);
+    border-radius: 0;
+  }
+
+  .navbar-right {
+    order: 2;
+    gap: 8px;
+  }
+
+  .navbar-search {
+    display: none;
+  }
+
+  /* --- Dropdowns --- */
+  .notif-dropdown {
+    position: fixed;
+    top: 64px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+  }
+
+  .profile-dropdown {
+    position: fixed;
+    top: 64px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+  }
+
+  /* --- Dashboard --- */
   .dashboard {
-    padding: 20px 16px;
+    padding: 16px 12px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 22px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .kpi-card {
+    padding: 16px;
+  }
+
+  .kpi-value {
+    font-size: 24px;
+  }
+
+  /* AI Overview Panel */
+  .ai-overview-content {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .ai-overview-actions {
+    width: 100%;
+  }
+
+  .ai-upload-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ai-overview-stats {
+    flex-wrap: wrap;
+  }
+
+  /* Grid sections */
+  .dashboard-grid,
+  .bottom-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Responsive: Small Mobile (max-width: 480px) ===== */
+@media (max-width: 480px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-value {
+    font-size: 22px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 20px;
+  }
+
+  .profile-stats-row {
+    flex-direction: column;
+    gap: 8px;
   }
 }

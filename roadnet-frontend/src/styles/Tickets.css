@@ -502,28 +502,87 @@
     font-size: 14px;
 }
 
-/* Responsive */
-@media (max-width: 1100px) {
+/* ===== Responsive: Tablet ===== */
+@media (max-width: 1024px) {
     .tickets-stats {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .tickets-page {
+        padding: 24px 20px;
+    }
+
+    .tickets-header {
+        flex-direction: column;
+        gap: 12px;
+    }
 }
 
+/* ===== Responsive: Mobile ===== */
 @media (max-width: 768px) {
     .tickets-page {
-        padding: 20px 16px;
+        padding: 16px 12px;
+    }
+
+    .tickets-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .tickets-header-text h1 {
+        font-size: 22px;
+    }
+
+    .btn-manual-ticket {
+        width: 100%;
+        justify-content: center;
     }
 
     .tickets-stats {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .tickets-toolbar {
         flex-wrap: wrap;
+        gap: 8px;
     }
 
     .tickets-table-container {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tickets-table {
+        min-width: 700px;
+    }
+
+    /* Filter panel stacking */
+    .filter-panel-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .filter-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    /* Modal mobile */
+    .modal-content {
+        width: 95vw;
+        max-height: 90vh;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+}
+
+/* ===== Responsive: Small Mobile ===== */
+@media (max-width: 480px) {
+    .tickets-header-text h1 {
+        font-size: 20px;
     }
 }
 

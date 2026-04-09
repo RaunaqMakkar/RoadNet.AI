@@ -568,14 +568,320 @@
     gap: 5px;
 }
 
-/* Responsive */
-@media (max-width: 1100px) {
+/* ===== Responsive: Tablet ===== */
+@media (max-width: 1024px) {
     .dept-cards-grid {
         grid-template-columns: 1fr;
     }
 
     .dept-middle {
         grid-template-columns: 1fr;
+    }
+
+    .departments-page {
+        padding: 24px 20px;
+    }
+
+    .dept-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* ===== Responsive: Mobile ===== */
+@media (max-width: 768px) {
+
+    /* Page container */
+    .departments-page {
+        padding: 16px 12px 32px;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Header */
+    .dept-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .dept-header-text h1 {
+        font-size: 22px;
+    }
+
+    .dept-header-text p {
+        font-size: 13px;
+    }
+
+    .dept-header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .btn-filter,
+    .btn-assign-dept {
+        flex: 1;
+        min-width: 0;
+        justify-content: center;
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    /* Filter Panel */
+    .dept-filter-panel {
+        padding: 12px 14px;
+    }
+
+    .dept-filter-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dept-filter-field select {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .btn-clear-filters {
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+    }
+
+    /* Department Cards */
+    .dept-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .dept-card {
+        padding: 16px;
+    }
+
+    .dept-card-top {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .dept-card h3 {
+        font-size: 15px;
+    }
+
+    /* Middle section — stack vertically */
+    .dept-middle {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Panels */
+    .d-panel {
+        overflow: hidden;
+    }
+
+    .d-panel-header {
+        padding: 14px 16px 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .d-panel-header h3 {
+        font-size: 16px;
+    }
+
+    .sort-control {
+        font-size: 12px;
+    }
+
+    /* Assignments table — horizontal scroll */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .assignments-table {
+        min-width: 520px;
+    }
+
+    .assignments-table thead th {
+        padding: 10px 14px;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .assignments-table td {
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+
+    .assign-ticket-desc {
+        max-width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Table footer */
+    .assignments-footer {
+        padding: 10px 16px;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .assignments-count {
+        font-size: 12px;
+    }
+
+    /* Resource Allocation sidebar */
+    .resource-sidebar {
+        width: 100%;
+    }
+
+    .resource-stat {
+        padding: 14px 16px;
+        gap: 10px;
+    }
+
+    .resource-stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+
+    .resource-stat-value {
+        font-size: 16px;
+    }
+
+    .resource-stat-extra {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    /* Incident Map */
+    .incident-map-title {
+        padding: 12px 16px 8px;
+        font-size: 14px;
+    }
+
+    .incident-map-container {
+        padding: 0 16px;
+    }
+
+    .incident-map-container .leaflet-container {
+        height: 160px;
+        border-radius: 8px;
+    }
+
+    /* Report Buttons — CRITICAL: prevent overflow */
+    .report-buttons {
+        padding: 14px 16px;
+        gap: 8px;
+    }
+
+    .btn-report-primary,
+    .btn-report-secondary {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 13px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        box-sizing: border-box;
+    }
+
+    /* Trend Chart */
+    .dept-trend-panel {
+        padding: 16px 12px;
+        overflow: hidden;
+    }
+
+    .dept-trend-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .dept-trend-header h3 {
+        font-size: 15px;
+    }
+
+    .dept-trend-legend {
+        gap: 12px;
+        font-size: 11px;
+    }
+
+    /* Modal mobile */
+    .modal-content {
+        width: 95vw;
+        max-height: 90vh;
+    }
+
+    .modal-header {
+        padding: 16px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-field select,
+    .modal-field input,
+    .modal-field textarea {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+}
+
+/* ===== Responsive: Small Mobile ===== */
+@media (max-width: 480px) {
+
+    .departments-page {
+        padding: 12px 8px 28px;
+    }
+
+    .dept-header-text h1 {
+        font-size: 20px;
+    }
+
+    .dept-card-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .dept-card h3 {
+        font-size: 14px;
+    }
+
+    .resource-stat-value {
+        font-size: 15px;
+    }
+
+    .d-panel-header {
+        padding: 12px;
+    }
+
+    .assignments-table {
+        min-width: 480px;
+    }
+
+    .assignments-table thead th {
+        padding: 8px 10px;
+    }
+
+    .assignments-table td {
+        padding: 10px;
+    }
+
+    .btn-report-primary,
+    .btn-report-secondary {
+        font-size: 12px;
+        padding: 10px 12px;
     }
 }
 

@@ -6,11 +6,14 @@ import Tickets from "./pages/Tickets";
 import Analytics from "./pages/Analytics";
 import Departments from "./pages/Departments";
 import AIInspection from "./pages/AIInspection";
+import ToastContainer from "./components/ToastContainer";
+import "./styles/Toast.css";
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/map" element={<MapView />} />
