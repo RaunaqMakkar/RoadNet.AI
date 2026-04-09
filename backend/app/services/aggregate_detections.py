@@ -2,7 +2,6 @@ import re
 
 
 def compute_iou(box_a, box_b):
-    # Standard IoU between two [x1, y1, x2, y2] boxes.
     ax1, ay1, ax2, ay2 = box_a
     bx1, by1, bx2, by2 = box_b
 
@@ -25,7 +24,6 @@ def compute_iou(box_a, box_b):
 
 
 def class_prefix(label):
-    # Build short ID prefix (e.g., pothole -> POT).
     letters = re.sub(r"[^A-Za-z]", "", label).upper()
     if not letters:
         return "ISS"
@@ -33,7 +31,6 @@ def class_prefix(label):
 
 
 def find_best_match(issues, detection, iou_threshold):
-    # Find an existing issue with same class and strongest IoU above threshold.
     det_class = detection.get("class", "")
     det_bbox = detection.get("bbox_xyxy", [0, 0, 0, 0])
     best_index = None
@@ -51,7 +48,6 @@ def find_best_match(issues, detection, iou_threshold):
 
 
 def create_issue(detection, issue_number):
-    # Initialize a new consolidated issue from first sighting.
     area = detection.get("mask_area_pixels")
     area = float(area) if area is not None else 0.0
     cls = detection.get("class", "unknown")
@@ -71,7 +67,6 @@ def create_issue(detection, issue_number):
 
 
 def update_issue(issue, detection):
-    # Merge a new detection into an existing issue cluster.
     ts = float(detection.get("timestamp_seconds", 0.0))
     area_value = detection.get("mask_area_pixels")
     area = float(area_value) if area_value is not None else 0.0
@@ -86,7 +81,6 @@ def update_issue(issue, detection):
     issue["frame_numbers"].append(frame_number)
     issue["confidences"].append(confidence)
 
-    # Running mean/max area, and unique frame count for this issue.
     new_count = prev_count + 1
     issue["avg_area_pixels"] = ((issue["avg_area_pixels"] * prev_count) + area) / new_count
     issue["max_area_pixels"] = max(issue["max_area_pixels"], area)
@@ -94,7 +88,6 @@ def update_issue(issue, detection):
 
 
 def finalize_issues(issues):
-    # Drop internal tracking fields and keep dashboard-friendly summary fields.
     finalized = []
     for issue in issues:
         confidences = issue["confidences"]
@@ -105,8 +98,6 @@ def finalize_issues(issues):
                 "class_id": issue["class_id"],
                 "first_seen": round(issue["first_seen"], 3),
                 "last_seen": round(issue["last_seen"], 3),
-                "video_timestamp": round(issue["first_seen"], 3),
-                "frame_number": min(issue["frame_numbers"]) if issue["frame_numbers"] else 0,
                 "frames_detected": issue["frames_detected"],
                 "avg_area_pixels": round(issue["avg_area_pixels"], 2),
                 "max_area_pixels": int(round(issue["max_area_pixels"])),
@@ -120,7 +111,6 @@ def finalize_issues(issues):
 
 
 def aggregate_detections(detections: list, iou_threshold: float = 0.5) -> list:
-    # Process detections in chronological order to merge repeated sightings.
     ordered = sorted(
         detections,
         key=lambda d: (
@@ -133,12 +123,8 @@ def aggregate_detections(detections: list, iou_threshold: float = 0.5) -> list:
     for detection in ordered:
         best_match_index = find_best_match(issues, detection, iou_threshold)
         if best_match_index is None:
-            # No matching issue found -> open a new issue cluster.
             issues.append(create_issue(detection, issue_number=len(issues) + 1))
         else:
-            # Matching issue found -> merge detection into that issue.
             update_issue(issues[best_match_index], detection)
 
     return finalize_issues(issues)
-
-

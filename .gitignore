@@ -8,6 +8,9 @@ all videos and detections old/
 # generated uploads
 backend/temp_uploads/
 
+# generated frames
+frames/
+
 # Python / JS caches if they ever appear at root
 **/__pycache__/
 *.py[cod]
