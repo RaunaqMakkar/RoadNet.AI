@@ -6,6 +6,7 @@ function TicketTable({ tickets, onView, onAssign, onClose }) {
     }
 
     return (
+        <div className="table-container">
         <table className="tickets-table">
             <thead>
                 <tr>
@@ -33,6 +34,7 @@ function TicketTable({ tickets, onView, onAssign, onClose }) {
                 ))}
             </tbody>
         </table>
+        </div>
     );
 }
 

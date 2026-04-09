@@ -61,6 +61,7 @@ function ActiveAssignments({ tickets }) {
                 </div>
             </div>
 
+            <div className="table-container">
             <table className="assignments-table">
                 <thead>
                     <tr>
@@ -100,6 +101,7 @@ function ActiveAssignments({ tickets }) {
                     )}
                 </tbody>
             </table>
+            </div>
 
             <div className="assignments-footer">
                 <span className="assignments-count">

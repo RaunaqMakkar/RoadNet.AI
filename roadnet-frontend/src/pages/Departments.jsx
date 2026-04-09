@@ -26,7 +26,7 @@ function Departments() {
             .then((res) => setStats(res.data))
             .catch(() => setStats(null));
 
-        const ticketsP = API.get("/tickets", { params: { page: 1, limit: 100, order: "desc" } })
+        const ticketsP = API.get("/tickets", { params: { page: 1, limit: 10000, order: "desc" } })
             .then((res) => setTickets(res.data.data || []))
             .catch(() => setTickets([]));
 

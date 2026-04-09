@@ -5,32 +5,29 @@ import UserManagement from "./UserManagement";
 import NotificationSettings from "./NotificationSettings";
 import AlertThresholds from "./AlertThresholds";
 import RoleDefinitions from "./RoleDefinitions";
-import "../styles/Settings.css";
 
 const PROFILE_TABS = ["User Management", "Notifications", "Alert Thresholds", "Role-Based Access"];
 
 function Navbar() {
     const location = useLocation();
     const navigate = useNavigate();
-    const isDashboard = location.pathname === "/";
-    const searchPlaceholder = {
-        "/map": "Search locations...",
-        "/tickets": "Search tickets...",
-        "/analytics": "Search metrics...",
-        "/departments": "Search departments...",
-        "/inspection": "Search detections...",
-    }[location.pathname] || "Search...";
-    const [searchQuery, setSearchQuery] = useState("");
     const [bellOpen, setBellOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
-    const [profileTab, setProfileTab] = useState(null); // null = summary, string = settings tab
+    const [profileTab, setProfileTab] = useState(null);
     const [users, setUsers] = useState([]);
     const [tickets, setTickets] = useState([]);
     const [stats, setStats] = useState(null);
     const [readNotifs, setReadNotifs] = useState(new Set());
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const bellRef = useRef(null);
     const profileRef = useRef(null);
+    const menuRef = useRef(null);
+
+    // Close mobile menu on route change
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [location.pathname]);
 
     // Fetch data on mount
     useEffect(() => {
@@ -52,6 +49,9 @@ function Navbar() {
             if (profileRef.current && !profileRef.current.contains(e.target)) {
                 setProfileOpen(false);
                 setProfileTab(null);
+            }
+            if (menuRef.current && !menuRef.current.contains(e.target) && !e.target.closest('.hamburger-btn')) {
+                setIsMenuOpen(false);
             }
         };
         document.addEventListener("mousedown", handler);
@@ -101,7 +101,7 @@ function Navbar() {
                 RoadNet.AI
             </a>
 
-            <ul className="navbar-links">
+            <ul className={`navbar-links ${isMenuOpen ? 'mobile-open' : ''}`} ref={menuRef}>
                 <li><NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Dashboard</NavLink></li>
                 <li><NavLink to="/inspection">AI Inspection</NavLink></li>
                 <li><NavLink to="/map">Map View</NavLink></li>
@@ -110,23 +110,14 @@ function Navbar() {
                 <li><NavLink to="/departments">Departments</NavLink></li>
             </ul>
 
+            {/* Hamburger Button (mobile only) */}
+            <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+                <span className={`hamburger-icon ${isMenuOpen ? 'open' : ''}`}>
+                    <span /><span /><span />
+                </span>
+            </button>
+
             <div className="navbar-right">
-                {/* ===== Search Bar (hidden on Dashboard) ===== */}
-                {!isDashboard && (
-                    <div className="navbar-search">
-                        <svg className="navbar-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>
-                        <input
-                            type="text"
-                            className="navbar-search-input"
-                            placeholder={searchPlaceholder}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                )}
                 {/* ===== Bell / Notifications ===== */}
                 <div className="navbar-bell-wrapper" ref={bellRef}>
                     <button className="navbar-bell" onClick={handleBellClick}>

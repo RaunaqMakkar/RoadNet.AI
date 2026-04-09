@@ -10,6 +10,21 @@ const PRIORITY_COLORS = {
     Low: "#22c55e",
 };
 
+/* Fixes map disappearing on mobile resize */
+function ResizeHandler() {
+    const map = useMap();
+    useEffect(() => {
+        const handleResize = () => {
+            setTimeout(() => map.invalidateSize(), 100);
+        };
+        window.addEventListener("resize", handleResize);
+        // Also invalidate on initial mount
+        handleResize();
+        return () => window.removeEventListener("resize", handleResize);
+    }, [map]);
+    return null;
+}
+
 function LocateControl() {
     const map = useMap();
     return (
@@ -196,6 +211,7 @@ function MapContainerView({ features, mode }) {
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             />
             <LocateControl />
+            <ResizeHandler />
 
             {/* Standard mode — individual colored circle markers */}
             {mode === "Standard" && features.map((f, i) => {

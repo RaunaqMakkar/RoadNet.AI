@@ -15,6 +15,7 @@ function UserManagement({ users }) {
             </div>
 
             <div className="s-panel">
+                <div className="table-container">
                 <table className="users-table">
                     <thead>
                         <tr>
@@ -51,6 +52,7 @@ function UserManagement({ users }) {
                         })}
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     );

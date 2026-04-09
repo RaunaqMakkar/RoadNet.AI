@@ -4,6 +4,7 @@ function InspectionDetectionTable({ detections }) {
     return (
         <div className="detection-table-section">
             <h2>All Detected Issues</h2>
+            <div className="table-container">
             <table className="detection-table">
                 <thead>
                     <tr>
@@ -37,6 +38,7 @@ function InspectionDetectionTable({ detections }) {
                     ))}
                 </tbody>
             </table>
+            </div>
         </div>
     );
 }
