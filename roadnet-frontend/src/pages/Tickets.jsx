@@ -198,7 +198,7 @@ function Tickets() {
                                     <label>AI Detection Frame</label>
                                     <div className="modal-frame-img-wrapper">
                                         <img
-                                            src={`http://127.0.0.1:8000${viewTicket.image_url}`}
+                                            src={viewTicket.image_url?.startsWith("http") ? viewTicket.image_url : `http://127.0.0.1:8000${viewTicket.image_url}`}
                                             alt={`Detection frame ${viewTicket.frame_id || ""}`}
                                         />
                                         {viewTicket.frame_id && (

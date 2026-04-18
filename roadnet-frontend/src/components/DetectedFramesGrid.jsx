@@ -38,7 +38,7 @@ function DetectedFramesGrid({ detections }) {
                     <div className="frame-card" key={i}>
                         <div className="frame-card-img">
                             <img
-                                src={`${API_BASE}${det.image_url}`}
+                                src={det.image_url?.startsWith("http") ? det.image_url : `${API_BASE}${det.image_url}`}
                                 alt={det.issue_title}
                                 loading="lazy"
                             />
