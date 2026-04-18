@@ -1,4 +1,5 @@
 import os
+import requests
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -12,19 +13,65 @@ from app.services.frame_extractor import extract_and_annotate_frames
 BASE_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(BASE_DIR / ".env")
 
-DEFAULT_MODEL_PATH = os.getenv("MODEL_PATH", "weights/best.pt")
+MODEL_PATH = os.getenv("MODEL_PATH", "weights/best.pt")
+MODEL_URL = os.getenv("MODEL_URL")
+
+
+def _download_model(dest: Path):
+    """Download model weights from MODEL_URL if not already present."""
+    if dest.exists():
+        print(f"✅ Model already exists at: {dest}")
+        return
+
+    if not MODEL_URL:
+        raise ValueError(
+            "MODEL_URL is not set in environment variables and model "
+            f"weights not found at: {dest}. "
+            "Set MODEL_URL in backend/.env to a direct download link."
+        )
+
+    print(f"⬇ Downloading model from: {MODEL_URL}")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+
+    # Support Google Drive links via gdown if URL contains drive.google.com
+    if "drive.google.com" in MODEL_URL:
+        try:
+            import gdown
+            gdown.download(MODEL_URL, str(dest), quiet=False, fuzzy=True)
+        except ImportError:
+            raise ImportError(
+                "gdown is required for Google Drive downloads. "
+                "Install it with: pip install gdown"
+            )
+    else:
+        response = requests.get(MODEL_URL, stream=True, timeout=300)
+        response.raise_for_status()
+        with open(dest, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+    print(f"✅ Model downloaded successfully to: {dest}")
 
 
 def _resolve_model() -> Path:
-    model_path = Path(DEFAULT_MODEL_PATH)
+    model_path = Path(MODEL_PATH)
     if not model_path.is_absolute():
         model_path = (BASE_DIR / model_path).resolve()
+
+    # Auto-download if missing
+    _download_model(model_path)
+
     if not model_path.exists():
         raise FileNotFoundError(
-            f"Model weights not found at: {model_path}. "
-            "Set MODEL_PATH in backend/.env to an absolute path."
+            f"Model weights not found at: {model_path} even after download attempt."
         )
     return model_path
+
+
+# Download model ONCE at module load (server startup)
+print("🚀 Initializing RoadNet.AI model...")
+_MODEL_PATH_RESOLVED = _resolve_model()
+print(f"🧠 Model ready at: {_MODEL_PATH_RESOLVED}")
 
 
 def run_full_pipeline(video_path: str) -> list:
@@ -39,8 +86,36 @@ def run_full_pipeline(video_path: str) -> list:
     )
 
     detections = payload["detections"]
+
+    # Extract annotated frames and upload to Cloudinary
+    enriched_frames = extract_and_annotate_frames(video_path, detections)
+
+    # Build a lookup: issue_type -> first enriched frame with a Cloudinary URL
+    # This maps each detection type to its best frame data
+    frame_lookup = {}
+    for ef in enriched_frames:
+        itype = ef.get("issue_type", "unknown")
+        if itype not in frame_lookup:
+            frame_lookup[itype] = ef
+
     issues = aggregate_detections(detections)
     scored = compute_rps(issues)
+
+    # Attach frame data (image_url, frame_id, frame_number) to each scored issue
+    for issue in scored:
+        issue_type = issue.get("type", "unknown")
+        frame_data = frame_lookup.get(issue_type)
+        if frame_data:
+            issue["image_url"] = frame_data.get("image_url")
+            issue["frame_id"] = frame_data.get("frame_id")
+            issue["frame_number"] = frame_data.get("frame_number")
+            print(f"[Pipeline] {issue_type}: frame_id={issue['frame_id']}, image_url={issue['image_url']}")
+        else:
+            issue["image_url"] = None
+            issue["frame_id"] = None
+            issue["frame_number"] = None
+            print(f"[Pipeline] {issue_type}: No frame data found")
+
     tickets = generate_tickets(scored)
     return tickets
 

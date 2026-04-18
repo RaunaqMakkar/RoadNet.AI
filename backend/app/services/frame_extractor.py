@@ -2,13 +2,16 @@
 Frame Extractor Service
 -----------------------
 Extracts specific frames from a video, draws color-coded bounding boxes
-for each detection, and saves annotated frames as JPEG files.
+for each detection, uploads annotated frames to Cloudinary, and returns
+enriched detection dicts with cloud image URLs.
 """
 
 import os
 import cv2
 import numpy as np
 from pathlib import Path
+
+from app.services.cloudinary_service import upload_frame
 
 # Bounding box colours per class  (BGR for OpenCV)
 CLASS_COLORS = {
@@ -19,8 +22,9 @@ CLASS_COLORS = {
 }
 DEFAULT_COLOR = (200, 200, 200)
 
-FRAMES_DIR = Path(__file__).resolve().parents[2] / "frames"
-FRAMES_DIR.mkdir(exist_ok=True)
+# Temporary directory for frames before Cloudinary upload
+TEMP_FRAMES_DIR = Path(__file__).resolve().parents[2] / "temp_frames"
+TEMP_FRAMES_DIR.mkdir(exist_ok=True)
 
 
 def _severity_from_confidence(conf: float) -> str:
@@ -67,9 +71,9 @@ def extract_and_annotate_frames(video_path: str, raw_detections: list) -> list:
     """
     Given a video path and the list of raw detections (from video_processor),
     re-open the video, seek to each unique detected frame, draw all bounding
-    boxes on that frame, and save the annotated image.
+    boxes on that frame, upload the annotated image to Cloudinary, and clean up.
 
-    Returns a list of enriched detection dicts with frame image info.
+    Returns a list of enriched detection dicts with Cloudinary image URLs.
     """
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -105,12 +109,22 @@ def extract_and_annotate_frames(video_path: str, raw_detections: list) -> list:
                 det.get("confidence", 0),
             )
 
-        # Save annotated frame
+        # Save annotated frame temporarily
         frame_counter += 1
         frame_id = f"FRM_{frame_counter:04d}"
         filename = f"{frame_id}.jpg"
-        filepath = FRAMES_DIR / filename
-        cv2.imwrite(str(filepath), frame)
+        temp_filepath = TEMP_FRAMES_DIR / filename
+        cv2.imwrite(str(temp_filepath), frame)
+
+        # Upload to Cloudinary
+        cloudinary_url = upload_frame(str(temp_filepath), frame_id)
+
+        # Delete local temp file after upload
+        if temp_filepath.exists():
+            temp_filepath.unlink()
+
+        # Use Cloudinary URL if upload succeeded, otherwise fall back to None
+        image_url = cloudinary_url if cloudinary_url else None
 
         # Build enriched detection entries for each detection on this frame
         for det in dets_for_frame:
@@ -126,7 +140,7 @@ def extract_and_annotate_frames(video_path: str, raw_detections: list) -> list:
             extracted.append({
                 "frame_id": frame_id,
                 "frame_number": frame_number,
-                "image_url": f"/frames/{filename}",
+                "image_url": image_url,
                 "issue_type": class_name,
                 "issue_title": _issue_title(class_name),
                 "confidence": round(conf, 4),
