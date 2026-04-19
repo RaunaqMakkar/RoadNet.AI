@@ -18,37 +18,22 @@ MODEL_URL = os.getenv("MODEL_URL")
 
 
 def _download_model(dest: Path):
-    """Download model weights from MODEL_URL if not already present."""
     if dest.exists():
         print(f"✅ Model already exists at: {dest}")
         return
 
     if not MODEL_URL:
-        raise ValueError(
-            "MODEL_URL is not set in environment variables and model "
-            f"weights not found at: {dest}. "
-            "Set MODEL_URL in backend/.env to a direct download link."
-        )
+        raise ValueError("MODEL_URL not set")
 
     print(f"⬇ Downloading model from: {MODEL_URL}")
     dest.parent.mkdir(parents=True, exist_ok=True)
 
-    # Support Google Drive links via gdown if URL contains drive.google.com
-    if "drive.google.com" in MODEL_URL:
-        try:
-            import gdown
-            gdown.download(MODEL_URL, str(dest), quiet=False, fuzzy=True)
-        except ImportError:
-            raise ImportError(
-                "gdown is required for Google Drive downloads. "
-                "Install it with: pip install gdown"
-            )
-    else:
-        response = requests.get(MODEL_URL, stream=True, timeout=300)
-        response.raise_for_status()
-        with open(dest, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+    response = requests.get(MODEL_URL, stream=True)
+    response.raise_for_status()
+
+    with open(dest, "wb") as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
 
     print(f"✅ Model downloaded successfully to: {dest}")
 
