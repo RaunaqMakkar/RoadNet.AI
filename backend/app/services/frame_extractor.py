@@ -9,9 +9,14 @@ enriched detection dicts with cloud image URLs.
 import os
 import cv2
 import numpy as np
+import time
+import logging
 from pathlib import Path
+from uuid import uuid4
 
 from app.services.cloudinary_service import upload_frame
+
+logger = logging.getLogger(__name__)
 
 # Bounding box colours per class  (BGR for OpenCV)
 CLASS_COLORS = {
@@ -77,11 +82,15 @@ def extract_and_annotate_frames(video_path: str, raw_detections: list) -> list:
     """
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
+        logger.error("Could not open video file")
         return []
 
     fps = cap.get(cv2.CAP_PROP_FPS)
     if fps <= 0:
         fps = 30.0
+
+    # Generate a unique run prefix so each inference run creates distinct images
+    run_id = uuid4().hex[:8]
 
     # Group detections by frame_number
     frames_dict = {}
@@ -112,18 +121,28 @@ def extract_and_annotate_frames(video_path: str, raw_detections: list) -> list:
         # Save annotated frame temporarily
         frame_counter += 1
         frame_id = f"FRM_{frame_counter:04d}"
+        cloudinary_public_id = f"{run_id}_{frame_id}"
         filename = f"{frame_id}.jpg"
         temp_filepath = TEMP_FRAMES_DIR / filename
-        cv2.imwrite(str(temp_filepath), frame)
+
+        write_ok = cv2.imwrite(str(temp_filepath), frame)
+        if not write_ok:
+            continue
 
         # Upload to Cloudinary
-        cloudinary_url = upload_frame(str(temp_filepath), frame_id)
+        cloudinary_url = None
+        try:
+            cloudinary_url = upload_frame(str(temp_filepath), cloudinary_public_id)
+        except Exception:
+            pass
 
-        # Delete local temp file after upload
-        if temp_filepath.exists():
-            temp_filepath.unlink()
+        # Delete local temp file after upload attempt
+        try:
+            if temp_filepath.exists():
+                temp_filepath.unlink()
+        except Exception:
+            pass
 
-        # Use Cloudinary URL if upload succeeded, otherwise fall back to None
         image_url = cloudinary_url if cloudinary_url else None
 
         # Build enriched detection entries for each detection on this frame

@@ -1,8 +1,5 @@
-import os
-import requests
+import time
 from pathlib import Path
-
-from dotenv import load_dotenv
 
 from app.services.aggregate_detections import aggregate_detections
 from app.services.rps_engine import compute_rps
@@ -11,74 +8,18 @@ from app.services.video_processor import process_video_in_memory
 from app.services.frame_extractor import extract_and_annotate_frames
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-load_dotenv(BASE_DIR / ".env")
+MODEL_PATH = BASE_DIR.parent / "weights" / "best.pt"
 
-MODEL_PATH = os.getenv("MODEL_PATH", "weights/best.pt")
-MODEL_URL = os.getenv("MODEL_URL")
-
-
-def _download_model(dest: Path):
-    """Download model weights from MODEL_URL if not already present."""
-    if dest.exists():
-        print(f"✅ Model already exists at: {dest}")
-        return
-
-    if not MODEL_URL:
-        raise ValueError(
-            "MODEL_URL is not set in environment variables and model "
-            f"weights not found at: {dest}. "
-            "Set MODEL_URL in backend/.env to a direct download link."
-        )
-
-    print(f"⬇ Downloading model from: {MODEL_URL}")
-    dest.parent.mkdir(parents=True, exist_ok=True)
-
-    # Support Google Drive links via gdown if URL contains drive.google.com
-    if "drive.google.com" in MODEL_URL:
-        try:
-            import gdown
-            gdown.download(MODEL_URL, str(dest), quiet=False, fuzzy=True)
-        except ImportError:
-            raise ImportError(
-                "gdown is required for Google Drive downloads. "
-                "Install it with: pip install gdown"
-            )
-    else:
-        response = requests.get(MODEL_URL, stream=True, timeout=300)
-        response.raise_for_status()
-        with open(dest, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-
-    print(f"✅ Model downloaded successfully to: {dest}")
-
-
-def _resolve_model() -> Path:
-    model_path = Path(MODEL_PATH)
-    if not model_path.is_absolute():
-        model_path = (BASE_DIR / model_path).resolve()
-
-    # Auto-download if missing
-    _download_model(model_path)
-
-    if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model weights not found at: {model_path} even after download attempt."
-        )
-    return model_path
-
-
-# Download model ONCE at module load (server startup)
-print("🚀 Initializing RoadNet.AI model...")
-_MODEL_PATH_RESOLVED = _resolve_model()
-print(f"🧠 Model ready at: {_MODEL_PATH_RESOLVED}")
+if not MODEL_PATH.exists():
+    raise FileNotFoundError(
+        f"Model weights not found at: {MODEL_PATH}. "
+        "Place your best.pt file in the project root weights directory: ../weights/best.pt"
+    )
 
 
 def run_full_pipeline(video_path: str) -> list:
-    model_path = _resolve_model()
-
     payload = process_video_in_memory(
-        model_path=str(model_path),
+        model_path=str(MODEL_PATH),
         video_path=video_path,
         conf=0.40,
         device="cpu",
@@ -109,12 +50,10 @@ def run_full_pipeline(video_path: str) -> list:
             issue["image_url"] = frame_data.get("image_url")
             issue["frame_id"] = frame_data.get("frame_id")
             issue["frame_number"] = frame_data.get("frame_number")
-            print(f"[Pipeline] {issue_type}: frame_id={issue['frame_id']}, image_url={issue['image_url']}")
         else:
             issue["image_url"] = None
             issue["frame_id"] = None
             issue["frame_number"] = None
-            print(f"[Pipeline] {issue_type}: No frame data found")
 
     tickets = generate_tickets(scored)
     return tickets
@@ -125,13 +64,10 @@ def run_inspection_pipeline(video_path: str) -> dict:
     Enhanced pipeline for the AI Inspection page.
     Returns detection frames with annotated images plus summary stats.
     """
-    model_path = _resolve_model()
-
-    import time
     start_time = time.time()
 
     payload = process_video_in_memory(
-        model_path=str(model_path),
+        model_path=str(MODEL_PATH),
         video_path=video_path,
         conf=0.40,
         device="cpu",

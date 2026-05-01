@@ -1,5 +1,3 @@
-const API_BASE = "http://127.0.0.1:8000";
-
 function DetectedFramesGrid({ detections }) {
     if (!detections || detections.length === 0) return null;
 
@@ -37,11 +35,33 @@ function DetectedFramesGrid({ detections }) {
                 {detections.map((det, i) => (
                     <div className="frame-card" key={i}>
                         <div className="frame-card-img">
-                            <img
-                                src={det.image_url?.startsWith("http") ? det.image_url : `${API_BASE}${det.image_url}`}
-                                alt={det.issue_title}
-                                loading="lazy"
-                            />
+                            {det.image_url ? (
+                                <img
+                                    src={det.image_url}
+                                    alt={det.issue_title}
+                                    loading="lazy"
+                                    onError={(e) => {
+                                        e.target.style.display = "none";
+                                        e.target.nextSibling && (e.target.nextSibling.style.display = "flex");
+                                    }}
+                                />
+                            ) : null}
+                            {/* Fallback when no image URL or image fails to load */}
+                            <div
+                                className="frame-card-no-image"
+                                style={{
+                                    display: det.image_url ? "none" : "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    width: "100%",
+                                    height: "160px",
+                                    background: "rgba(255,255,255,0.03)",
+                                    color: "rgba(255,255,255,0.3)",
+                                    fontSize: "0.75rem",
+                                }}
+                            >
+                                No image available
+                            </div>
                             <span className={`frame-tag ${det.issue_type}`}>
                                 {det.issue_type.replace("_", " ").toUpperCase()} {(det.confidence * 100).toFixed(0)}%
                             </span>

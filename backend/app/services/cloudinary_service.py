@@ -1,15 +1,13 @@
 """Cloudinary upload service for detection frames."""
 
 import os
+import logging
 import cloudinary.uploader
 
 # Ensure cloudinary is configured on import
 import app.config.cloudinary_config  # noqa: F401
 
-# Validate credentials on import
-_cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME", "")
-if not _cloud_name or _cloud_name == "your_cloud_name":
-    print("⚠️  WARNING: Cloudinary credentials not configured! Update CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in backend/.env")
+logger = logging.getLogger(__name__)
 
 
 def upload_frame(file_path: str, public_id: str) -> str | None:
@@ -23,8 +21,16 @@ def upload_frame(file_path: str, public_id: str) -> str | None:
     Returns:
         The secure URL of the uploaded image, or None on failure.
     """
+    if not os.path.exists(file_path):
+        logger.error("File does not exist: %s", file_path)
+        return None
+
+    file_size = os.path.getsize(file_path)
+    if file_size == 0:
+        logger.error("File is empty (0 bytes): %s", file_path)
+        return None
+
     try:
-        print(f"[Cloudinary] Uploading {file_path} as {public_id}...")
         response = cloudinary.uploader.upload(
             file_path,
             public_id=public_id,
@@ -33,9 +39,7 @@ def upload_frame(file_path: str, public_id: str) -> str | None:
             resource_type="image",
         )
         url = response.get("secure_url")
-        print(f"[Cloudinary] ✅ Upload success! URL: {url}")
         return url
     except Exception as e:
-        print(f"[Cloudinary] ❌ Upload Error: {e}")
+        logger.error("Upload failed for %s: %s", public_id, e)
         return None
-
