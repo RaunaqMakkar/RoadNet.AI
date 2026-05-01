@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">🛣️ RoadNet.AI</h1>
+  <h1 align="center">RoadNet.AI</h1>
   <p align="center">
     <strong>AI-Powered Road Infrastructure Monitoring & Management Platform</strong>
   </p>
@@ -10,7 +10,7 @@
 
 <br>
 
-## 📖 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
